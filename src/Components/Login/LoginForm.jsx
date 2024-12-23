@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Validate } from "./Validate";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import app from "../../utils/Firebase";
 
 export default function LoginForm() {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -8,9 +14,68 @@ export default function LoginForm() {
     setIsSignIn(!isSignIn);
   };
 
+  // const email=useRef(null)
+  // const password=useRef(null);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
+  const [error, setError] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(email, password);
+    const valid = Validate(email, password);
+    setError(valid);
+
+    if (valid) return;
+
+    // sign-in/signUp
+    if (!isSignIn) {
+      // sign up
+      const auth = getAuth(app);
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log(user);
+          setEmail("");
+          setPassword("");
+          setUserName("");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setError(errorMessage);
+        });
+    } else {
+      // sign in
+      const auth = getAuth(app);
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          setEmail("");
+          setPassword("");
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setError(errorMessage);
+        });
+    }
   };
+  
+
+  // TODO:
+  //  make a redux store and store the user create in that store
+  // make adduser and removeuser in store
+  // redirect to browse page after succesfull signup/signin using dispatch..
+
+
+
 
   return (
     <div className="flex justify-center items-center mx-auto left-0 right-0">
@@ -24,6 +89,8 @@ export default function LoginForm() {
             ""
           ) : (
             <input
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
               type="text"
               placeholder="Enter Your Name..."
               className="w-full h-12 px-4 bg-zinc-800 border border-zinc-700 rounded-md text-white placeholder:text-zinc-400"
@@ -31,17 +98,23 @@ export default function LoginForm() {
           )}
 
           <input
+            // ref={email}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             type="text"
             placeholder="Email or mobile number"
             className="w-full h-12 px-4 bg-zinc-800 border border-zinc-700 rounded-md text-white placeholder:text-zinc-400"
           />
 
           <input
+            //  ref={password}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
             className="w-full h-12 px-4 bg-zinc-800 border border-zinc-700 rounded-md text-white placeholder:text-zinc-400"
           />
-
+          <p className="text-red-600 font-bold">{error}</p>
           <button
             type="submit"
             className="w-full h-12 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
@@ -49,18 +122,6 @@ export default function LoginForm() {
             {isSignIn ? "Sign In" : "Sign Up"}
           </button>
 
-          {isSignIn ? <div className="text-center text-zinc-400">OR</div> : ""}
-
-          {isSignIn ? (
-            <button
-              type="button"
-              className="w-full h-12 bg-zinc-700 hover:bg-zinc-600 text-white rounded-md transition-colors"
-            >
-              Use a sign-in code
-            </button>
-          ) : (
-            ""
-          )}
           <div className="flex items-center space-x-2">
             {isSignIn ? (
               <input
