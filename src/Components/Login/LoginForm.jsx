@@ -4,18 +4,20 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import app from "../../utils/Firebase";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 export default function LoginForm() {
   const [isSignIn, setIsSignIn] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsSignIn(!isSignIn);
   };
-
-  // const email=useRef(null)
-  // const password=useRef(null);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,33 @@ export default function LoginForm() {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          console.log(user);
+          //updating user profile for display name
+          updateProfile(user, {
+            displayName: userName,
+            photoURL:
+              "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png?20201013161117",
+          })
+            .then(async () => {
+              // Force refresh the current user to get updated data
+              await user.reload();
+              const { uid, displayName, email, photoURL } = auth.currentUser;
+      
+              // Dispatch to Redux store
+              dispatch(
+                addUser({
+                  uid,
+                  email,
+                  displayName,
+                  photoURL,
+                })
+              );
+              navigate("/browse");
+            })
+            .catch((error) => {
+              // An error occurred
+              setError(errorMessage);
+            });
+          // save user to redux store from here is a option but also have to do it in signin so use firebase's built in function (onauthstate change)
           setEmail("");
           setPassword("");
           setUserName("");
@@ -46,6 +74,7 @@ export default function LoginForm() {
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
+
           setError(errorMessage);
         });
     } else {
@@ -56,6 +85,7 @@ export default function LoginForm() {
           // Signed in
           const user = userCredential.user;
           console.log(user);
+          navigate("/browse");
           setEmail("");
           setPassword("");
           // ...
@@ -67,16 +97,12 @@ export default function LoginForm() {
         });
     }
   };
-  
 
   // TODO:
   //  make a redux store and store the user create in that store
   // make adduser and removeuser in store
   // redirect to browse page after succesfull signup/signin using dispatch..
-
-
-
-
+  
   return (
     <div className="flex justify-center items-center mx-auto left-0 right-0">
       <div className="w-full max-w-sm p-6 space-y-6 bg-black/85 rounded-md  max-h-fit absolute top-44">
