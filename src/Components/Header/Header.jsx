@@ -26,7 +26,7 @@ const Header = () => {
 
   useEffect(() => {
     const auth = getAuth(app);
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid, displayName, email,photoURL } = user;
         dispatch(addUser({ uid: uid, email: email, displayName: displayName ,photoURL: photoURL}));
@@ -36,24 +36,33 @@ const Header = () => {
         navigate("/");
       }
     });
+    // to apply some logic when this component is unmounted we have to return a function here that unsubscribes the listener
+    return () => unsubscribe();
+
   },[]); 
 
   return (
-    <div className="absolute w-screen px-12 py-6 bg-gradient-to-b from-black flex justify-between align-middle text-center">
-      <img src="./public/Images/logo.png" alt="logo" className="w-48" />
-{user ?       <div className="flex gap-2 align-middle">
-      <button
-          onClick={handleSignOut}
-          className="text-3xl font-bold text-white text-center align-middle py-4 cursor-pointer"
-        >
-          sign Out
-        </button> 
-        <img
-          className="w-12 h-12 flex-centered mt-3"
-          src={user?.photoURL}
-          alt="user avatar"
-        />
-      </div>:""}
+    <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black flex justify-between items-center z-20">
+      <img 
+        src="./public/Images/logo.png" 
+        alt="Netflix Logo" 
+        className="w-36 md:w-44" 
+      />
+      {user && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSignOut}
+            className="px-4 py-2 text-white hover:text-gray-300 transition-colors text-xl"
+          >
+            Sign Out
+          </button>
+          <img
+            className="w-10 h-10 rounded-lg border-2 border-transparent hover:border-white transition-all"
+            src={user?.photoURL}
+            alt="User Avatar"
+          />
+        </div>
+      )}
     </div>
   );
 };

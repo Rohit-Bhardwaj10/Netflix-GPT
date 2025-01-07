@@ -7,13 +7,12 @@ import {
   updateProfile,
 } from "firebase/auth";
 import app from "../../utils/Firebase";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 export default function LoginForm() {
   const [isSignIn, setIsSignIn] = useState(true);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
 
   const toggleForm = () => {
     setIsSignIn(!isSignIn);
@@ -60,7 +59,6 @@ export default function LoginForm() {
                   photoURL,
                 })
               );
-              navigate("/browse");
             })
             .catch((error) => {
               // An error occurred
@@ -85,7 +83,6 @@ export default function LoginForm() {
           // Signed in
           const user = userCredential.user;
           console.log(user);
-          navigate("/browse");
           setEmail("");
           setPassword("");
           // ...

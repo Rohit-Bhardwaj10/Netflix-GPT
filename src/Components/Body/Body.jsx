@@ -5,13 +5,9 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
 } from "react-router-dom";
 import SignUp from "../SIgnUp/SignUp";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import app from "../../utils/Firebase";
-import { useDispatch } from "react-redux";
-import { addUser, removeUser } from "../../utils/UserSlice";
+
 
 const Body = () => {
 
