@@ -2,7 +2,8 @@ import React from 'react'
 
 const SecondaryContainer = () => {
   return (
-    <div>
+    <div >
+      <h1>SecondaryContainer</h1>
     </div>
   )
 }

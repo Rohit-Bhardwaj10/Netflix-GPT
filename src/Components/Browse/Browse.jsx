@@ -9,8 +9,12 @@ const Browse = () => {
   return (
     <div>
       <Header/>
-      <MainContiner/>
-      <SecondaryContainer/>
+      <div className="relative">
+        <MainContiner/>
+      </div>
+      <div className="relative z-20 text-white">
+        <SecondaryContainer/>
+      </div>
     </div>
   )
 }

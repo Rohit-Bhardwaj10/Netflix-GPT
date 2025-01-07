@@ -31,7 +31,7 @@ const VideoContainer = ({ movieId }) => {
   }, []);
 
   return (
-    <div className="w-screen h-screen absolute z-0">
+    <div className="w-screen h-screen absolute z-0 bg-black">
       <ReactPlayer
         url={`https://www.youtube.com/watch?v=${trailerId}`}
         width="100%"
